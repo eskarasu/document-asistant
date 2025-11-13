@@ -22,9 +22,17 @@ st.set_page_config(
     layout="wide"
 )
 
-# Başlık ve açıklama
-st.title("📄 PDF Belge Asistanı")
-st.markdown("PDF dosyanızı yükleyin ve içeriği hakkında sorular sorun! *(Google Gemini ile çalışır)*")
+from i18n import get_translation
+
+
+def t(key, **kwargs):
+    lang = st.session_state.get("selected_language", "tr")
+    return get_translation(lang, key, **kwargs)
+
+
+# Başlık ve açıklama (localize edilmiş)
+st.title(t("title"))
+st.markdown(t("description"))
 
 
 def extract_text_from_pdf(pdf_file):
@@ -289,25 +297,35 @@ if "last_request_time" not in st.session_state:
 
 # Sidebar - Ayarlar ve Kontroller
 with st.sidebar:
-    st.header("⚙️ Ayarlar")
-    
+    st.header(t("settings"))
+
+    # Dil seçimi
+    lang_default = st.session_state.get("selected_language", "tr")
+    lang_choice = st.selectbox(
+        t("language_label"),
+        options=[("tr", "Türkçe"), ("en", "English")],
+        format_func=lambda x: x[1],
+        index=0 if lang_default == "tr" else 1,
+    )
+    st.session_state.selected_language = lang_choice[0]
+
     # API Key kontrolü - GEMINI
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         api_key = st.text_input(
-            "Google Gemini API Key", 
-            type="password", 
-            help="API key'inizi .env dosyasına veya buraya girebilirsiniz"
+            t("api_key_input"),
+            type="password",
+            help=t("api_key_help")
         )
-    
+
     if api_key:
-        st.success("✅ Gemini API Key yüklendi")
+        st.success(t("api_key_loaded"))
     else:
-        st.warning("⚠️ Lütfen Gemini API Key girin")
-    
+        st.warning(t("api_key_missing"))
+
     # Model seçimi - GÜNCEL GEMINI MODELLER
-    st.subheader("🤖 Model Seçimi")
-    
+    st.subheader("🤖 " + t("model_selection"))
+
     # Güncel Gemini model kategorileri ve açıklamaları
     model_info = {
         "gemini-flash-latest": "💨 Ultra hafif - En az token (ÖNERİLEN)",
@@ -315,91 +333,66 @@ with st.sidebar:
         "gemini-2.0-flash-exp": "🚀 Yeni deneysel model",
         "gemini-1.5-pro": "💎 En güçlü (daha fazla token)"
     }
-    
+
     selected_model = st.selectbox(
-        "Model",
+        t("model_selection"),
         list(model_info.keys()),
         index=0,
         format_func=lambda x: f"{x} - {model_info[x]}",
         help="Quota sorunu için gemini-1.5-flash-8b önerilir"
     )
-    
+
     # Model bilgisi
-    st.info(f"ℹ️ Seçili: **{selected_model}**")
-    
+    st.info(t("selected_model_info", model=selected_model))
+
     # Optimizasyon bilgisi
-    with st.expander("⚡ Optimizasyon Notları"):
-        st.markdown("""
-        **Token Tasarrufu İçin Yapılanlar:**
-        - ✅ Akıllı metin parçalama (chunking)
-        - ✅ Soruyla ilgili kısımlar aranıyor
-        - ✅ Sadece son 2 sohbet turunu gönderme
-        - ✅ 2 saniye rate limiting
-        - ✅ Kısaltılmış prompt formatı
-        - ✅ Maksimum 3500 karakter context
-        
-        **Öneriler:**
-        - Kısa ve net sorular sorun
-        - gemini-1.5-flash-8b modelini kullanın
-        - Çok uzun PDF'ler için soruları spesifik yapın
-        """)
-    
+    with st.expander(t("optimization_notes")):
+        st.markdown(t("optimization_content"))
+
     # API Key alma bilgisi
-    with st.expander("🔑 Gemini API Key nasıl alınır?"):
-        st.markdown("""
-        **Gemini API Key Alma Adımları:**
-        1. [Google AI Studio](https://aistudio.google.com/app/apikey) sayfasına gidin
-        2. Google hesabınızla giriş yapın
-        3. "Get API Key" veya "Create API Key" butonuna tıklayın
-        4. API Key'i kopyalayın
-        5. `.env` dosyasına `GEMINI_API_KEY=your_key_here` şeklinde ekleyin
-        
-        **Ücretsiz Limitler:**
-        - 15 istek/dakika
-        - 1500 istek/gün
-        - 1 milyon token/dakika (giriş)
-        """)
-    
+    with st.expander(t("how_to_get_key")):
+        st.markdown(t("how_to_get_key_steps"))
+
     st.divider()
-    
+
     # PDF yükleme
-    st.subheader("📤 PDF Yükle")
+    st.subheader("📤 " + t("upload_pdf"))
     uploaded_file = st.file_uploader(
-        "PDF Dosyası Seçin",
+        t("upload_pdf"),
         type=["pdf"],
-        help="Maksimum 10MB boyutunda PDF yükleyebilirsiniz"
+        help=t("upload_help")
     )
-    
+
     # Dosya boyutu kontrolü
     if uploaded_file is not None:
         file_size_mb = uploaded_file.size / (1024 * 1024)
-        
+
         if file_size_mb > 10:
-            st.error("❌ Dosya boyutu 10MB'dan büyük olamaz!")
+            st.error(t("file_too_large"))
             uploaded_file = None
         else:
-            st.info(f"📊 Dosya boyutu: {file_size_mb:.2f} MB")
-            
+            st.info(t("file_size_info", size=f"{file_size_mb:.2f}"))
+
             # PDF işleme
-            if st.button("📖 PDF'i İşle", type="primary"):
+            if st.button(t("process_pdf"), type="primary"):
                 with st.spinner("PDF okunuyor..."):
                     text, page_count = extract_text_from_pdf(uploaded_file)
-                    
+
                     if text:
                         st.session_state.pdf_text = text
-                        
+
                         # Metni parçalara böl
                         with st.spinner("Metin parçalanıyor..."):
                             chunks = chunk_text(text, max_chars=3000)
                             st.session_state.pdf_chunks = chunks
-                        
+
                         st.session_state.pdf_info = {
                             "filename": uploaded_file.name,
                             "pages": page_count,
                             "stats": get_text_stats(text),
                             "chunks": len(chunks)
                         }
-                        
+
                         # Gemini modelini başlat
                         if api_key:
                             with st.spinner(f"{selected_model} başlatılıyor..."):
@@ -410,46 +403,46 @@ with st.sidebar:
                                 else:
                                     st.error("❌ Model başlatılamadı. API Key'inizi kontrol edin.")
                         else:
-                            st.error("❌ Lütfen Gemini API Key girin!")
-                        
+                            st.error(t("api_key_missing"))
+
                         if st.session_state.gemini_model:
                             st.rerun()
-    
+
     # PDF bilgileri
     if st.session_state.pdf_text:
         st.divider()
-        st.subheader("📋 Belge Bilgileri")
-        st.write(f"**Dosya:** {st.session_state.pdf_info['filename']}")
-        st.write(f"**Sayfa Sayısı:** {st.session_state.pdf_info['pages']}")
-        st.write(f"**Kelime Sayısı:** {st.session_state.pdf_info['stats']['words']:,}")
-        st.write(f"**Metin Parçaları:** {st.session_state.pdf_info['chunks']}")
-        
+        st.subheader(t("document_info"))
+        st.write(f"**{t('file_label')}** {st.session_state.pdf_info['filename']}")
+        st.write(f"**{t('pages_label')}** {st.session_state.pdf_info['pages']}")
+        st.write(f"**{t('word_count')}** {st.session_state.pdf_info['stats']['words']:,}")
+        st.write(f"**{t('chunks_label')}** {st.session_state.pdf_info['chunks']}")
+
         # Token tahmini
         estimated_tokens = st.session_state.pdf_info['stats']['characters'] // 4
-        st.write(f"**Tahmini Token:** ~{estimated_tokens:,}")
-        
+        st.write(f"**{t('estimated_tokens')}** ~{estimated_tokens:,}")
+
         # PDF önizleme
-        with st.expander("👁️ Metin Önizleme"):
+        with st.expander(t("preview_label")):
             preview_text = st.session_state.pdf_text[:500] + "..."
-            st.text_area("İlk 500 karakter", preview_text, height=150, disabled=True)
-    
+            st.text_area(t('first_500_chars'), preview_text, height=150, disabled=True)
+
     # Sohbet kontrolü
     if st.session_state.messages:
         st.divider()
-        st.subheader("💬 Sohbet Kontrolü")
-        
-        st.info(f"📊 {len(st.session_state.messages)} mesaj")
-        
+        st.subheader(t("chat_control"))
+
+        st.info(t("chat_count_info", count=len(st.session_state.messages)))
+
         # Sohbeti temizle
-        if st.button("🗑️ Sohbeti Temizle", type="secondary"):
+        if st.button(t("clear_chat"), type="secondary"):
             st.session_state.messages = []
             st.rerun()
-        
+
         # Sohbeti indir
         col1, col2 = st.columns(2)
         with col1:
             st.download_button(
-                label="📄 TXT",
+                label=t("download_txt"),
                 data=export_chat_history(st.session_state.messages, "txt"),
                 file_name=f"chat_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
                 mime="text/plain",
@@ -457,7 +450,7 @@ with st.sidebar:
             )
         with col2:
             st.download_button(
-                label="📋 JSON",
+                label=t("download_json"),
                 data=export_chat_history(st.session_state.messages, "json"),
                 file_name=f"chat_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                 mime="application/json",
@@ -467,9 +460,9 @@ with st.sidebar:
 
 # Ana alan - Sohbet
 if not st.session_state.pdf_text:
-    st.info("👈 Başlamak için sol taraftan bir PDF dosyası yükleyin")
+    st.info(t("start_hint"))
 elif not st.session_state.gemini_model:
-    st.warning("⚠️ Model başlatılamadı. Lütfen Gemini API Key'inizi kontrol edip PDF'i tekrar işleyin.")
+    st.warning(t("model_not_started"))
 else:
     # Sohbet geçmişini göster
     for message in st.session_state.messages:
@@ -477,9 +470,9 @@ else:
             st.markdown(message["content"])
     
     # Kullanıcı girişi
-    if prompt := st.chat_input("PDF hakkında bir soru sorun..."):
+    if prompt := st.chat_input(t("chat_placeholder")):
         if not api_key:
-            st.error("❌ Lütfen önce Gemini API Key girin!")
+            st.error(t("api_key_missing"))
         else:
             # Kullanıcı mesajını ekle
             st.session_state.messages.append({"role": "user", "content": prompt})
@@ -488,7 +481,7 @@ else:
             
             # Asistan yanıtı
             with st.chat_message("assistant"):
-                with st.spinner("Gemini düşünüyor..."):
+                with st.spinner(t("gemini_thinking")):
                     try:
                         # Gemini'den yanıt al
                         response = get_gemini_response(
@@ -502,32 +495,20 @@ else:
                         st.session_state.messages.append({"role": "assistant", "content": response})
                     
                     except Exception as e:
-                        error_msg = f"❌ Hata oluştu: {str(e)}"
+                        error_msg = f"{t('error_prefix')} {str(e)}"
                         st.error(error_msg)
-                        
-                        # Hata türüne göre öneriler
+
+                        # Hata türüne göre öneriler (kısaltılmış, lokalize)
                         error_str = str(e).lower()
                         if "429" in error_str or "quota" in error_str or "limit" in error_str:
-                            st.warning("""
-                            💡 **Quota Aşıldı - Çözüm Önerileri:**
-                            
-                            1. **gemini-1.5-flash-8b** modelini kullanın (en az token tüketir)
-                            2. Birkaç saniye bekleyip tekrar deneyin
-                            3. Daha **kısa ve spesifik** sorular sorun
-                            4. PDF'nizin boyutunu küçültün
-                            5. Sohbet geçmişini temizleyin
-                            6. Farklı bir API key deneyin
-                            7. Günlük limitiniz dolmuşsa yarın tekrar deneyin
-                            
-                            **Not:** Bu uygulama token tasarrufu için optimize edildi.
-                            """)
+                            st.warning(t('quota_suggestions'))
                         elif "api key" in error_str or "authentication" in error_str or "401" in error_str:
-                            st.warning("💡 API Key'iniz geçersiz olabilir. [Google AI Studio](https://aistudio.google.com/app/apikey) üzerinden yeni bir key alın.")
+                            st.warning(t('invalid_key_suggestion'))
                         elif "safety" in error_str or "blocked" in error_str:
-                            st.warning("💡 Gemini güvenlik filtresi içeriği engelledi. Sorunuzu farklı şekilde ifade edin.")
+                            st.warning(t('safety_blocked'))
                         elif "404" in error_str or "not found" in error_str:
-                            st.warning("💡 Model bulunamadı. **gemini-1.5-flash-8b** modelini deneyin.")
-                        
+                            st.warning(t('model_not_found'))
+
                         st.session_state.messages.append({"role": "assistant", "content": error_msg})
 
 
@@ -543,12 +524,4 @@ with col2:
 with col3:
     st.metric("Aktif Model", selected_model.split('-')[1] if '-' in selected_model else selected_model)
 
-st.markdown(
-    """
-    <div style='text-align: center; color: gray; font-size: 0.8em; margin-top: 10px;'>
-    📄 PDF Belge Asistanı v2.1 (Optimize Edilmiş) | Powered by Google Gemini<br>
-    <small>Token tasarrufu için optimize edildi • <a href="https://aistudio.google.com/app/apikey" target="_blank">API Key Al</a></small>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown(t('footer_html'), unsafe_allow_html=True)

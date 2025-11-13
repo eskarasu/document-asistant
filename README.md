@@ -1,44 +1,44 @@
-# 📄 PDF Belge Asistanı
+# 📄 PDF Document Assistant
 
-PDF dosyalarınızı yükleyip, içeriği hakkında sorular sorabileceğiniz akıllı bir asistan uygulaması.
+An intelligent assistant application that lets you upload PDF files and ask questions about their content.
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.31-red.svg)
 ![LangChain](https://img.shields.io/badge/LangChain-0.1-green.svg)
 
-## 🌟 Özellikler
+## 🌟 Features
 
-### Temel Özellikler
-- ✅ **PDF Yükleme**: Sadece PDF dosyalarını kabul eder (max 10MB)
-- ✅ **Metin Çıkarma**: PyPDF2 ile güvenilir metin çıkarma
-- ✅ **Soru-Cevap Sistemi**: OpenAI ile akıllı yanıtlar
-- ✅ **Konuşma Geçmişi**: Bağlam korunarak devam eden sohbet
-- ✅ **Modern Arayüz**: Chat benzeri kullanıcı dostu tasarım
+### Core Features
+- ✅ **PDF Upload**: Accepts only PDF files (max 10MB)
+- ✅ **Text Extraction**: Reliable extraction using PyPDF2
+- ✅ **Q&A System**: Smart answers using LLMs
+- ✅ **Conversation History**: Maintains context across the chat
+- ✅ **Modern UI**: Chat-like, user-friendly interface
 
-### Ek Özellikler
-- 🎯 **Model Seçimi**: GPT-4o-mini, GPT-4o, GPT-3.5-turbo arası seçim
-- 📊 **Metin İstatistikleri**: Sayfa, kelime ve karakter sayısı
-- 👁️ **PDF Önizleme**: Metnin ilk kısmını görüntüleme
-- 🗑️ **Sohbet Temizleme**: Konuşma geçmişini tek tıkla silme
-- 💾 **Geçmiş İndirme**: TXT veya JSON formatında dışa aktarma
+### Additional Features
+- 🎯 **Model Selection**: Choose between available LLMs
+- 📊 **Text Statistics**: Page, word and character counts
+- 👁️ **PDF Preview**: View the beginning of the extracted text
+- 🗑️ **Clear Chat**: Reset conversation history with one click
+- 💾 **Export History**: Download chat history as TXT or JSON
 
-## 📋 Gereksinimler
+## 📋 Requirements
 
 ```bash
-Python 3.8 veya üzeri
-OpenAI API Key
+Python 3.8 or later
+Google Gemini API Key (or configured provider key)
 ```
 
-## 🚀 Kurulum
+## 🚀 Installation
 
-### 1. Repository'yi Klonlayın
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/eskarasu/document-asistant.git
 cd belge-asistani
 ```
 
-### 2. Sanal Ortam Oluşturun (Önerilir)
+### 2. Create a virtual environment (recommended)
 
 ```bash
 python -m venv venv
@@ -50,166 +50,147 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 3. Gerekli Paketleri Yükleyin
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. API Key Yapılandırması
+### 4. Configure API Key
 
-`.env` dosyası oluşturun:
+Create a `.env` file:
 
 ```bash
 cp .env.example .env
 ```
 
-`.env` dosyasını düzenleyip API key'inizi ekleyin:
+Edit `.env` and add your API key:
 
 ```
-OPENAI_API_KEY=your_actual_api_key_here
+GEMINI_API_KEY=your_actual_api_key_here
 ```
 
-**API Key Nasıl Alınır?**
-1. [OpenAI Platform](https://platform.openai.com/) adresine gidin
-2. Hesap oluşturun veya giriş yapın
-3. API Keys bölümünden yeni bir key oluşturun
+**How to get an API key**
+1. Visit Google AI Studio (or your provider's console)
+2. Sign in with your account
+3. Create or get an API key and copy it
+4. Put the key in your `.env` as shown above
 
-## 💻 Kullanım
+## 💻 Usage
 
-Uygulamayı başlatın:
+Start the app:
 
 ```bash
 streamlit run app.py
 ```
 
-Tarayıcınızda otomatik olarak `http://localhost:8501` açılacaktır.
+Your browser should open `http://localhost:8501`.
 
-### Adım Adım Kullanım
+### Step-by-step
 
-1. **PDF Yükleme**
-   - Sol sidebar'dan "PDF Dosyası Seçin" butonuna tıklayın
-   - PDF dosyanızı seçin (max 10MB)
-   - "📖 PDF'i İşle" butonuna tıklayın
+1. **Upload a PDF**
+   - Click the "Select PDF File" button in the left sidebar
+   - Choose a PDF file (max 10MB)
+   - Click the "Process PDF" button
 
-2. **Soru Sorma**
-   - Alt kısımdaki chat kutusuna sorunuzu yazın
-   - Enter'a basın veya gönder butonuna tıklayın
-   - Asistan PDF içeriğine göre yanıt verecektir
+2. **Ask Questions**
+   - Type your question in the chat input at the bottom
+   - Press Enter or click send
+   - The assistant will answer based on the PDF content
 
-3. **Sohbet Yönetimi**
-   - Geçmişi görmek için yukarı kaydırın
-   - "🗑️ Sohbeti Temizle" ile yeni başlayın
-   - "💾 İndir" butonları ile geçmişi kaydedin
+3. **Manage Chat**
+   - Scroll up to view the conversation history
+   - Click "Clear Chat" to start fresh
+   - Use the download buttons to save history as TXT or JSON
 
-## 📸 Ekran Görüntüleri
+## 📸 Screenshots
 
-### Ana Arayüz
-![Ana Arayüz](screenshots/main-interface.png)
-*PDF yükleme ve sohbet arayüzü*
+### Main Interface
+![Main Interface](screenshots/main-interface.png)
 
-### Sohbet Örneği
-![Sohbet](screenshots/chat-example.png)
-*Asistan ile etkileşim*
+### Chat Example
+![Chat](screenshots/chat-example.png)
 
-## 🏗️ Proje Yapısı
+## 🏗️ Project Structure
 
 ```
 belge-asistani/
-├── app.py                 # Ana uygulama kodu
-├── requirements.txt       # Python bağımlılıkları
-├── .env.example          # API key şablonu
-├── .gitignore            # Git ignore kuralları
-├── README.md             # Bu dosya
-└── screenshots/          # Ekran görüntüleri (opsiyonel)
+├── app.py                 # Main application
+├── requirements.txt       # Python dependencies
+├── .env.example           # API key template
+├── README.md              # Original README (Turkish)
+├── README_en.md           # English translation (this file)
+├── .gitignore             # Git ignore rules
+└── screenshots/           # Optional screenshots
 ```
 
-## 🔧 Teknik Detaylar
+## 🔧 Technical Details
 
-### Kullanılan Teknolojiler
+### Technologies Used
 
-- **Streamlit**: Web arayüzü
-- **LangChain**: LLM orkestrasyon framework'ü
-- **OpenAI API**: Dil modeli (GPT-4o-mini, GPT-4o, GPT-3.5-turbo)
-- **PyPDF2**: PDF metin çıkarma
-- **Python-dotenv**: Ortam değişkeni yönetimi
+- **Streamlit**: Web UI
+- **LangChain**: LLM orchestration (if used)
+- **Google Gemini** (or configured LLM provider)
+- **PyPDF2**: PDF text extraction
+- **python-dotenv**: Environment variable management
 
-### Kod Özellikleri
+### Code Highlights
 
-- ✨ Clean Code prensipleri
-- 📝 Detaylı docstring'ler
-- 🛡️ Kapsamlı hata yönetimi
-- 🔄 Session state ile durum yönetimi
-- 🎨 Modüler fonksiyon yapısı
+- Clean, modular functions
+- Docstrings and error handling
+- Session-state based UI state
 
-## 🎓 Öğrenme Noktaları
+## 🎓 Learning Outcomes
 
-Bu projede şunları öğreneceksiniz:
+With this project you will learn:
 
-1. **Streamlit Temel ve İleri Seviye**
-   - File uploader kullanımı
-   - Session state yönetimi
-   - Chat interface oluşturma
-   - Sidebar ve layout düzenleme
+1. **Streamlit basics and advanced usage**
+   - File uploader, session state, chat UI, sidebar layout
+2. **PDF processing**
+   - PyPDF2 text extraction and file size validation
+3. **LLM integration**
+   - Prompt engineering, chat history handling
+4. **Python best practices**
+   - Modular code, docstrings, environment safety
 
-2. **PDF İşleme**
-   - PyPDF2 ile metin çıkarma
-   - Dosya boyutu kontrolü
-   - Hata yönetimi
+## ⚠️ Notes
 
-3. **LangChain & LLM**
-   - ConversationChain oluşturma
-   - Memory yönetimi
-   - Prompt engineering
-   - OpenAI API entegrasyonu
+- **API Costs**: Using LLM APIs may incur costs — monitor usage.
+- **File Size**: Large PDFs may cause token limits to be reached; a 10MB limit is recommended.
+- **Security**: Never commit your `.env` to public repositories.
 
-4. **Python Best Practices**
-   - Modüler kod yazımı
-   - Docstring kullanımı
-   - Ortam değişkeni güvenliği
+## 🐛 Troubleshooting
 
-## ⚠️ Önemli Notlar
+### "API Key not found"
+- Ensure `.env` is in the project root and contains the key.
+- Restart the application after adding the key.
 
-- **API Maliyeti**: OpenAI API kullanımı ücretlidir. Token kullanımınızı takip edin.
-- **Dosya Boyutu**: Büyük PDF'ler token limitini aşabilir. 10MB limiti önerilir.
-- **Güvenlik**: `.env` dosyasını asla GitHub'a yüklemeyin!
-- **Model Seçimi**: GPT-4o daha iyi sonuçlar verir ancak daha pahalıdır.
+### "PDF could not be read"
+- Verify the PDF is not corrupted or password-protected.
+- Try another PDF to isolate the issue.
 
-## 🐛 Sorun Giderme
+### Slow responses
+- Try a smaller model to reduce latency and cost.
+- Reduce PDF size or ask more specific questions.
 
-### "OpenAI API Key not found" Hatası
-- `.env` dosyasının proje kök dizininde olduğundan emin olun
-- API key'in doğru kopyalandığını kontrol edin
-- Uygulamayı yeniden başlatın
+## 🤝 Contributing
 
-### "PDF okunamadı" Hatası
-- PDF'in bozuk olmadığından emin olun
-- Şifrelenmiş PDF'lerde sorun çıkabilir
-- Başka bir PDF ile deneyin
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -m 'Add feature'`)
+4. Push (`git push origin feature/my-feature`)
+5. Open a Pull Request
 
-### Yavaş Yanıtlar
-- Daha küçük bir model seçin (gpt-3.5-turbo)
-- PDF boyutunu küçültün
-- İnternet bağlantınızı kontrol edin
+## 📝 License
 
-## 🤝 Katkıda Bulunma
+This project is licensed under the MIT License.
 
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit edin (`git commit -m 'Add amazing feature'`)
-4. Push edin (`git push origin feature/amazing-feature`)
-5. Pull Request açın
+## 👤 Contact
 
-## 📝 Lisans
+Project maintainer - [@eskarasu](https://github.com/eskarasu)
 
-Bu proje MIT lisansı altında lisanslanmıştır.
-
-## 👤 İletişim
-
-Proje Sahibi - [@eskarasu](https://github.com/eskarasu)
-
-Proje Linki: [https://github.com/eskarasu/belge-asistani](https://github.com/eskarasu/belge-asistani)
+Project: https://github.com/eskarasu/belge-asistani
 
 ---
 
-⭐ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın!
+If you found this project useful, please give it a star! ⭐
